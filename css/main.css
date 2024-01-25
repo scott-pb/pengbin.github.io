@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url("/font/LXGWWenKaiGBScreenR.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
   --width-left: 288px;
   --width-main: 720px;
@@ -55,7 +61,7 @@
   --text-p3: #808080;
   --text-p4: #999;
   --text-meta: #ccc;
-  --text-code: #14181f;
+  --text-code: #f53900;
   --theme-link: #2094f3;
 }
 @media (prefers-color-scheme: dark) {
@@ -76,7 +82,7 @@
     --text-p3: #858585;
     --text-p4: #707070;
     --text-meta: #4d4d4d;
-    --text-code: #fff;
+    --text-code: #ff6c3f;
   }
 }
 @media screen and (prefers-color-scheme: dark) and (max-width: 667px) {
@@ -142,7 +148,7 @@ table:not([class]) tr:hover {
   background: var(--block);
 }
 *[ff=title] {
-  font-family: system-ui, "Microsoft Yahei", "Segoe UI", -apple-system, Roboto, Ubuntu, "Helvetica Neue", Arial, "WenQuanYi Micro Hei", sans-serif;
+  font-family: HarmonyOS_Regular;
 }
 blockquote {
   display: block;
@@ -715,7 +721,7 @@ table:not([class]) {
   outline: none;
 }
 html {
-  font-family: system-ui, "Microsoft Yahei", "Segoe UI", -apple-system, Roboto, Ubuntu, "Helvetica Neue", Arial, "WenQuanYi Micro Hei", sans-serif;
+  font-family: HarmonyOS_Regular;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
@@ -4142,7 +4148,7 @@ details.toc[open] >div.body section .header+.doc_tree {
   width: 100%;
   line-height: 16px;
   box-sizing: border-box;
-  font-family: system-ui, "Microsoft Yahei", "Segoe UI", -apple-system, Roboto, Ubuntu, "Helvetica Neue", Arial, "WenQuanYi Micro Hei", sans-serif;
+  font-family: HarmonyOS_Regular;
   font-size: 0.8125rem;
   padding: 12px 0;
   color: var(--text-p0);
