@@ -1,9 +1,3 @@
-@font-face {
-  font-family: 'LXGW WenKai Screen';
-  src: url("/font/LXGWWenKaiGBScreenR.ttf");
-  font-weight: normal;
-  font-style: normal;
-}
 :root {
   --width-left: 288px;
   --width-main: 720px;
@@ -148,7 +142,7 @@ table:not([class]) tr:hover {
   background: var(--block);
 }
 *[ff=title] {
-  font-family: HarmonyOS_Regular;
+  font-family: "LXGW WenKai Screen";
 }
 blockquote {
   display: block;
@@ -721,7 +715,7 @@ table:not([class]) {
   outline: none;
 }
 html {
-  font-family: HarmonyOS_Regular;
+  font-family: "LXGW WenKai Screen";
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
@@ -4148,7 +4142,7 @@ details.toc[open] >div.body section .header+.doc_tree {
   width: 100%;
   line-height: 16px;
   box-sizing: border-box;
-  font-family: HarmonyOS_Regular;
+  font-family: "LXGW WenKai Screen";
   font-size: 0.8125rem;
   padding: 12px 0;
   color: var(--text-p0);
