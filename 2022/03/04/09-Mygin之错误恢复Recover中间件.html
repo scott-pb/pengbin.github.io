@@ -1,0 +1,398 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.26.3" theme-name="Stellar" theme-version="1.26.3">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>09.Mygin之错误恢复Recover中间件 - PBScott</title>
+
+  
+    <meta name="description" content="本篇是mygin这个系列的最后一篇。如果想自己动手实现一个类似Gin的Web框架，建议从 mgin第一篇开始，总代码行数有效行数只有600多行 github源码 mygin  目的 实现错误处理机制  panic简介在实现错误处理机制之前，我们知道在Go 中，错误的处理方式依靠return返回，由调用者处理。如果是不可恢复的错误，可以手动抛出错误，当然在实际运行中，也会遇到不可处理的错误，比如说除">
+<meta property="og:type" content="article">
+<meta property="og:title" content="09.Mygin之错误恢复Recover中间件">
+<meta property="og:url" content="http://scott-pb.github.io/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html">
+<meta property="og:site_name" content="PBScott">
+<meta property="og:description" content="本篇是mygin这个系列的最后一篇。如果想自己动手实现一个类似Gin的Web框架，建议从 mgin第一篇开始，总代码行数有效行数只有600多行 github源码 mygin  目的 实现错误处理机制  panic简介在实现错误处理机制之前，我们知道在Go 中，错误的处理方式依靠return返回，由调用者处理。如果是不可恢复的错误，可以手动抛出错误，当然在实际运行中，也会遇到不可处理的错误，比如说除">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://scott-pb.github.io/images/wc.png">
+<meta property="og:image" content="http://scott-pb.github.io/images/mygin09.png">
+<meta property="article:published_time" content="2022-03-04T08:42:35.000Z">
+<meta property="article:modified_time" content="2024-02-02T08:56:16.550Z">
+<meta property="article:author" content="PengBin">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://scott-pb.github.io/images/wc.png">
+  
+  
+  
+  <meta name="keywords" content="Golang,Web">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.26.3">
+
+  
+    <link rel="shortcut icon" href="/images/rect-256@2x.png">
+  
+
+  
+
+  
+  <link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.6.0/lxgwwenkaiscreen.css" media="all" />
+</head>
+<body>
+
+
+
+<div class="l_body content tech" id="start" layout="post" ><aside class="l_left"><div class="sidebar-container sidebar-blur">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">PBScott</div><div class="sub normal cap">⭐ 普罗米修斯的博客</div><div class="sub hover cap" style="opacity:0">🧡 Designed by scott</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" class="icon search-icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="探索" href="/explore/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="关于我" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+
+<widget class="widget-wrapper toc single" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E7%9A%84"><span class="toc-text">目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#panic%E7%AE%80%E4%BB%8B"><span class="toc-text">panic简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E8%A7%A6%E5%8F%91%E9%94%99%E8%AF%AF"><span class="toc-text">手动触发错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%8F%91%E7%94%9F%E9%94%99%E8%AF%AF"><span class="toc-text">程序发生错误</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#defer%E7%AE%80%E4%BB%8B"><span class="toc-text">defer简介</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#recover%E5%87%BD%E6%95%B0"><span class="toc-text">recover函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mygin%E5%BA%94%E7%94%A8"><span class="toc-text">mygin应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mygin%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="toc-text">mygin的错误处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%AD%E9%97%B4%E4%BB%B6-Recovery"><span class="toc-text">实现中间件 Recovery</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a></li></ol></li></ol></div></div></widget>
+
+
+
+
+
+
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title active" href="/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">09.Mygin之错误恢复Recover中间件</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item title" href="/2022/03/02/08-Mygin%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%BC%98%E5%8C%96%E5%8F%8Alogger%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">08.Mygin中间件优化及logger日志中间件</span></a><a class="item title" href="/2022/01/24/mygin-day01.html"><span class="title">01.Mygin实现简单Http</span></a><a class="item title" href="/2022/02/11/mygin-day07.html"><span class="title">07.Mygin中sync.Pool应用</span></a><a class="item title" href="/2022/02/07/mygin-day06.html"><span class="title">06.Mygin实现中间件Middleware</span></a><a class="item title" href="/2022/01/28/mygin-day03.html"><span class="title">03.Mygin实现上下文</span></a><a class="item title" href="/2022/01/31/mygin-day05.html"><span class="title">05.Mygin实现分组路由Group</span></a><a class="item title" href="/2022/01/30/mygin-day04.html"><span class="title">04.Mygin实现动态路由</span></a><a class="item title" href="/2022/01/26/mygin-day02.html"><span class="title">02.Mygin实现简单的路由</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="bread-nav fs12"><div class="left"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Go%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0Web%E6%A1%86%E6%9E%B6Mygin%E6%95%99%E7%A8%8B/">Go从零实现Web框架Mygin教程</a></div>
+<div id="post-meta"><span class="author">发布于：</span><span class="created"><time datetime="2022-03-04T08:42:35.000Z">2022-03-04</time></span><span class="updated">，更新于：<time datetime="2024-02-02T08:56:16.550Z">2024-02-02</time></span></div></div>
+</div>
+<article class="md-text content"><h1 class="article-title"><span>09.Mygin之错误恢复Recover中间件</span></h1><p>本篇是mygin这个系列的最后一篇。如果想自己动手实现一个类似Gin的Web框架，建议从 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/pengb/p/17967495">mgin第一篇</a>开始，<br>总代码行数有效行数只有600多行<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/wc.png" alt="wc.png"></p>
+<p><strong>github</strong>源码 <a target="_blank" rel="noopener" href="https://github.com/scott-pb/mygin">mygin</a> </p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><ul>
+<li>实现错误处理机制</li>
+</ul>
+<h2 id="panic简介"><a href="#panic简介" class="headerlink" title="panic简介"></a>panic简介</h2><p>在实现错误处理机制之前，我们知道在<strong>Go</strong> 中，错误的处理方式依靠return返回，由调用者处理。如果是不可恢复的错误，可以手动抛出错误，当然在实际运行中，也会遇到不可处理的错误，比如说除数为0的时候<strong>painc</strong> 也会触发。终止当前的程序。</p>
+<h3 id="手动触发错误"><a href="#手动触发错误" class="headerlink" title="手动触发错误"></a>手动触发错误</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//main.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  fmt.Println(<span class="string">&quot;before ....&quot;</span>)</span><br><span class="line">  <span class="built_in">panic</span>(<span class="string">&quot;some err message&quot;</span>)</span><br><span class="line">  fmt.Println(<span class="string">&quot;after ....&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>shell<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">~  go run cmd/main.go</span><br><span class="line">before ....</span><br><span class="line">panic: some err message</span><br><span class="line"></span><br><span class="line">goroutine 1 [running]:</span><br><span class="line">main.main()</span><br><span class="line">        /var/www/gophp/cmd/main.go:12 +0x5f</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="程序发生错误"><a href="#程序发生错误" class="headerlink" title="程序发生错误"></a>程序发生错误</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  i := []<span class="type">int</span>&#123;<span class="number">0</span>&#125;</span><br><span class="line">  j := <span class="number">2</span></span><br><span class="line">  fmt.Println(j / i[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>shell<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">go run cmd/main.go</span><br><span class="line">panic: runtime error: integer divide by zero</span><br><span class="line"></span><br><span class="line">goroutine 1 [running]:</span><br><span class="line">main.main()</span><br><span class="line">        /var/www/gophp/cmd/main.go:13 +0x194</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+<strong>painc</strong> 的介绍到此为止，也就是发生了<strong>painc</strong> 错误，对程序来说就是比较严重的，就会中断，但是这个时候需要捕获到这个<strong>painc</strong> 错误，<strong>Go</strong>中没有<strong>try…Catch…<strong>又想捕获错误，这个时候就该</strong>defer</strong> 出场了。</li>
+</ul>
+<h2 id="defer简介"><a href="#defer简介" class="headerlink" title="defer简介"></a>defer简介</h2><p><strong>panic</strong>会导致程序被中止，但是在程序终止前，会先把当前协程上已经<strong>defer</strong>的任务，执行完成后再终止。效果类似于其他语言的<strong>try…catch</strong>。</p>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//cmd/main.go</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">  fmt.Println(<span class="string">&quot;defer....&quot;</span>)</span><br><span class="line">  &#125;()</span><br><span class="line">  i := []<span class="type">int</span>&#123;<span class="number">0</span>&#125;</span><br><span class="line">  j := <span class="number">2</span></span><br><span class="line">  fmt.Println(j / i[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>shell<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">~ go run cmd/main.go</span><br><span class="line">defer....</span><br><span class="line">panic: runtime error: integer divide by zero</span><br><span class="line"></span><br><span class="line">goroutine 1 [running]:</span><br><span class="line">main.main()</span><br><span class="line">        /var/www/gophp/cmd/main.go:16 +0x1d3</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+可以看到，在程序退出之前先执行了<strong>defer</strong> 中的函数。如果能在<strong>defer</strong> 中捕获<strong>painc</strong> 错误，那么就能实现其他语言的try…catch</li>
+</ul>
+<h3 id="recover函数"><a href="#recover函数" class="headerlink" title="recover函数"></a>recover函数</h3><p>介绍之前看官方文档怎么定义的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// The recover built-in function allows a program to manage behavior of a</span><br><span class="line">// panicking goroutine. Executing a call to recover inside a deferred</span><br><span class="line">// function (but not any function called by it) stops the panicking sequence</span><br><span class="line">// by restoring normal execution and retrieves the error value passed to the</span><br><span class="line">// call of panic. If recover is called outside the deferred function it will</span><br><span class="line">// not stop a panicking sequence. In this case, or when the goroutine is not</span><br><span class="line">// panicking, or if the argument supplied to panic was nil, recover returns</span><br><span class="line">// nil. Thus the return value from recover reports whether the goroutine is</span><br><span class="line">// panicking.</span><br><span class="line">翻译后...</span><br><span class="line">recover 内置函数允许程序管理恐慌的 goroutine 的行为。在延迟函数（但不是它调用的任何函数）</span><br><span class="line">中执行恢复调用会通过恢复正常执行来停止 panic 序列，并检索传递给 panic 调用的错误值。如果</span><br><span class="line">在延迟函数之外调用 recover，则不会停止紧急序列。在这种情况下，或者当 goroutine 没有 </span><br><span class="line">panic 时，或者如果提供给 panic 的参数为 nil，则 recover 返回 nil。因此，recover 的</span><br><span class="line">返回值报告 goroutine 是否处于恐慌状态。</span><br></pre></td></tr></table></figure>
+<h3 id="mygin应用"><a href="#mygin应用" class="headerlink" title="mygin应用"></a>mygin应用</h3><ul>
+<li>cmd&#x2F;main.go<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;defer....&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">      fmt.Printf(<span class="string">&quot;recover 到错误信息：%s\n&quot;</span>, err.(<span class="type">error</span>).Error())</span><br><span class="line">	  fmt.Println(<span class="string">&quot;recover success&quot;</span>)</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;()</span><br><span class="line">  i := []<span class="type">int</span>&#123;<span class="number">0</span>&#125;</span><br><span class="line">  j := <span class="number">2</span></span><br><span class="line">  fmt.Println(j / i[<span class="number">0</span>])</span><br><span class="line">  fmt.Println(<span class="string">&quot;after panic&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+<li>shell<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">~ go run cmd/main.go</span><br><span class="line">defer....</span><br><span class="line">recover 到错误信息：runtime error: integer divide by zero</span><br><span class="line">recover success</span><br></pre></td></tr></table></figure>
+可以看到已经捕获到错误信息了，程序正常结束。 after panic 没有打印，这是正确的，当<strong>panic</strong> 被触发时，程序的执行栈就到定义的<strong>defer</strong> 函数。就像在try代码块中发生了异常，执行栈来到 catch，接下来执行 catch 代码块中的代码。而在 main() 中打印了 recover success，说明程序已经恢复正常，继续往下执行直到结束。</li>
+</ul>
+<h3 id="mygin的错误处理"><a href="#mygin的错误处理" class="headerlink" title="mygin的错误处理"></a>mygin的错误处理</h3><p>对一个 Web 框架而言，错误处理机制是必要的。如果发生了painc错误，应当返回错误信息或告诉对方失败了，而不至于什么都不返回，对调用方十分不友好。<br>例如我有如下的逻辑</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/scott-pb/mygin&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	r := mygin.Default()</span><br><span class="line">	group := r.Group(<span class="string">&quot;/api&quot;</span>)</span><br><span class="line">	group.GET(<span class="string">&quot;/recovery/:index&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *mygin.Context)</span></span> &#123;</span><br><span class="line">		index := c.Params.ByName(<span class="string">&quot;index&quot;</span>)</span><br><span class="line">		i, _ := strconv.ParseInt(index, <span class="number">10</span>, <span class="number">10</span>)</span><br><span class="line">		s := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span>&#125;</span><br><span class="line"></span><br><span class="line">		c.String(http.StatusOK, fmt.Sprintf(<span class="string">&quot;index:%d result:%d success!\n&quot;</span>, i, s[i]))</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	err := r.Run(<span class="string">&quot;:8088&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>根据调用方传递的index下标函数数组中的值，当传递的index超过数组下标时，就会发生painc错误，如果执行&#x2F;api&#x2F;recovery&#x2F;10 时，就会发生错误。调用方什么返回都没有。<br>这个时候，就需要添加一个错误的处理机制，当错误发生时，向调用方返回<strong>Internal Server Error</strong>，且打印必要的错误信息，方便进行错误定位。</p>
+<h3 id="实现中间件-Recovery"><a href="#实现中间件-Recovery" class="headerlink" title="实现中间件 Recovery"></a>实现中间件 Recovery</h3><p>新增文件 mygin&#x2F;recovery.go，在这个文件中实现中间件 Recovery</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/scott-pb/mygin/blob/main/recovery.go">mygin&#x2F;recovery.go</a><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> mygin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Recovery 发生错误时，恢复函数，且返回相应错误信息。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Recovery</span><span class="params">()</span></span> HandlerFunc &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(c *Context)</span></span> &#123;</span><br><span class="line">		<span class="comment">// 使用defer延迟执行，以便在函数退出时进行recover</span></span><br><span class="line">		<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="comment">// 如果发生panic，打印错误信息并返回500 Internal Server Error响应</span></span><br><span class="line">				fmt.Println(err.(<span class="type">error</span>).Error())</span><br><span class="line">				c.Writer.Write([]<span class="type">byte</span>(<span class="string">&quot;Internal Server Error\n&quot;</span>))</span><br><span class="line">				c.status = http.StatusInternalServerError</span><br><span class="line">				c.Abort() <span class="comment">// 终止后续中间件的执行</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line"></span><br><span class="line">		c.Next() <span class="comment">// 调用下一个中间件或处理函数</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<strong>Recovery</strong> 方法很简单，使用<strong>defer</strong>挂载上错误恢复的函数，在这个函数中调用 <strong>recover方法</strong>，捕获<strong>panic</strong>，打印错误信息，并且向调用方返回 Internal Server Error。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/scott-pb/mygin/blob/main/engine.go">mygin&#x2F;engine.go</a><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Default 返回一个默认的引擎实例</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Default</span><span class="params">()</span></span> *Engine &#123;</span><br><span class="line">	engine := New()</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Logger Recovery 中间件</span></span><br><span class="line">	engine.Use(Logger(), Recovery())</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Group 保存 engine 的指针</span></span><br><span class="line">	engine.RouterGroup.engine = engine</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> engine</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>接下来就是测试了</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<li>shell<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">~ curl http://127.0.0.1:8088/api/recovery/1</span><br><span class="line">index:1 result:3 success!</span><br><span class="line">~ curl http://127.0.0.1:8088/api/recovery/10</span><br><span class="line">Internal Server Error</span><br></pre></td></tr></table></figure></li>
+<li>控制台输出<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/mygin09.png" alt="mygin09.png"><br>可以看到第一次请求返回200成功，第二次请求，先打印了错误信息，然后对应的返回500错误，且调用方接收到了Internal Server Error。</li>
+</ul>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由scott-pb编写</p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2022/03/02/08-Mygin%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%BC%98%E5%8C%96%E5%8F%8Alogger%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6.html">08.Mygin中间件优化及logger日志中间件</a></div></section></div>
+
+<div class="related-wrap" id="related-posts">
+    <section class='header'>
+      <div class='title cap theme'>您可能感兴趣的文章</div>
+    </section>
+    <section class='body'>
+    <div class="related-posts"><a class="item" href="/2022/01/26/mygin-day02.html" title="02.Mygin实现简单的路由"><span class="title">02.Mygin实现简单的路由</span></a><a class="item" href="/2022/03/02/08-Mygin中间件优化及logger日志中间件.html" title="08.Mygin中间件优化及logger日志中间件"><span class="title">08.Mygin中间件优化及logger日志中间件</span></a><a class="item" href="/2022/01/28/mygin-day03.html" title="03.Mygin实现上下文"><span class="title">03.Mygin实现上下文</span></a><a class="item" href="/2022/01/30/mygin-day04.html" title="04.Mygin实现动态路由"><span class="title">04.Mygin实现动态路由</span></a><a class="item" href="/2022/01/31/mygin-day05.html" title="05.Mygin实现分组路由Group"><span class="title">05.Mygin实现分组路由Group</span></a></div></section></div>
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      快来参与讨论吧
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="scott-pb/blog-comments" issue-term="pathname" theme="preferred-color-scheme" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer fs12"><hr><div class="text"><center>
+</br>
+</br>
+<span id="runtime_span"></span>
+<script type="text/javascript">
+function show_runtime() {
+    window.setTimeout("show_runtime()", 1000);
+    X = new Date("11/20/2021 00:00:00");
+    Y = new Date();
+    T = (Y.getTime() - X.getTime());
+    M = 24 * 60 * 60 * 1000;
+    a = T / M;
+    A = Math.floor(a);
+    b = (a - A) * 24;
+    B = Math.floor(b);
+    c = (b - B) * 60;
+    C = Math.floor((b - B) * 60);
+    D = Math.floor((c - C) * 60);
+    runtime_span.innerHTML = "⏲️本站已运行 " + A + "天|" + B + "小时|" + C + "分|" + D + "秒⏲️"
+}
+show_runtime();
+</script>
+<!--动态线条背景-->
+<script type="text/javascript"color="220,220,220" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+</center>
+本站由 [PengBin](/) 使用 [Stellar 1.26.3](https://github.com/xaoxuu/hexo-theme-stellar/tree/1.26.3) 主题创建。
+本博客所有文章除特别声明外，均采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议，转载请注明出处。
+</div></footer>
+<div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg t="1705412886951" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8331" width="200" height="200"><path d="M638.72 970.666667h-256c-118.186667 0-198.272-25.002667-251.946667-78.72S52.053333 758.186667 52.053333 640V384c0-118.186667 25.002667-198.272 78.72-251.946667S264.533333 53.333333 382.72 53.333333h256c118.186667 0 198.272 25.002667 251.946667 78.72S969.386667 265.813333 969.386667 384v256c0 118.186667-25.002667 198.272-78.72 251.946667S756.906667 970.666667 638.72 970.666667z m-256-853.333334c-100.096 0-165.802667 19.2-206.72 59.946667S116.053333 283.904 116.053333 384v256c0 100.096 19.072 165.802667 59.946667 206.72S282.624 906.666667 382.72 906.666667h256c100.096 0 165.802667-19.072 206.72-59.946667S905.386667 740.096 905.386667 640V384c0-100.096-19.072-165.802667-59.946667-206.72S738.816 117.333333 638.72 117.333333z" p-id="8332"></path><path d="M638.72 970.666667a32 32 0 0 1-32-32V85.333333a32 32 0 0 1 32-32 32 32 0 0 1 32 32v853.333334a32 32 0 0 1-32 32zM340.053333 653.226667a31.914667 31.914667 0 0 1-22.613333-9.386667 32 32 0 0 1 0-45.269333L404.053333 512 317.44 425.386667a32 32 0 0 1 0-45.226667 32 32 0 0 1 45.226667 0l109.226666 109.226667a32 32 0 0 1 0 45.269333L362.666667 643.84a31.914667 31.914667 0 0 1-22.613334 9.386667z" p-id="8333"></path></svg>
+  </button>
+</div>
+<div class="main-mask" onclick="sidebar.toggle()"></div></div></div><div class="scripts">
+<script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.26.3';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.26.3';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js","memos":"/js/plugins/memos.js","marked":"/js/plugins/marked.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.bootcdn.net/ajax/libs/vanilla-lazyload/17.8.4/lazyload.min.js","transition":"fade"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.bootcdn.net/ajax/libs/scrollReveal.js/4.0.9/scrollreveal.min.js","distance":"16px","duration":800,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","flying_pages":"https://cdn.bootcdn.net/ajax/libs/flying-pages/2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.bootcdn.net/ajax/libs/fancyapps-ui/5.0.22/fancybox/fancybox.umd.min.js","css":"https://cdn.bootcdn.net/ajax/libs/fancyapps-ui/5.0.22/fancybox/fancybox.min.css","selector":null});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.copycode = Object.assign({"enable":true,"js":"/js/plugins/copycode.js","default_text":"Copy","success_text":"Copied","toast":"复制成功"});
+  }
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.26.3" async></script>
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+
+
+
+<!-- inject -->
+
+</div></body></html>
