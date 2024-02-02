@@ -73,11 +73,87 @@
 <header class="header mobile-only"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">PBScott</div><div class="sub normal cap">⭐ 普罗米修斯的博客</div><div class="sub hover cap" style="opacity:0">🧡 Designed by scott</div></a></div></header>
 
  
-@import 'partial/*'
-@import 'tag-plugins/*'
-@import 'sidebar/*'
-@import 'widgets/*'
-@import 'pages/*'
+
+
+
+
+<div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a class="active" href="/categories">分类：Go从零实现Web框架Mygin教程</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
+<div class="post-list post"><a class="post-card post" href="/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/mygin09.jpg"/></div><h2 class="post-title">09.Mygin之错误恢复Recover中间件</h2><div class="excerpt"><p>本篇是mygin这个系列的最后一篇。如果想自己动手实现一个类似Gin的Web框架，建议从 mgin第一篇开始，总代码行数有效行数只有600多行
+github源码 mygin 
+目的
+实现错误处理机制
+
+panic简介在实现错误处理机制之前，我们知道在Go 中，错误的处理方式依靠return返回，由调用者处理。如果是不可恢复的错误，可以手动抛出错误，当然在实际运行中，也会遇到不可处理的错误，比...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-03-04T08:42:35.000Z">2022-03-04</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/03/02/08-Mygin%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%BC%98%E5%8C%96%E5%8F%8Alogger%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day08.jpg"/></div><h2 class="post-title">08.Mygin中间件优化及logger日志中间件</h2><div class="excerpt"><p>本篇是mygin的第八篇，参照gin框架，Mygin从零开始完全手写，在实现的同时，带你一窥gin框架的核心原理实现。
+目的
+中间件Middleware优化
+默认log日志中间件在上篇 Mygin实现中间件Middleware 中间件Middleware很生硬，完全依赖循环，如果某个中间件想要cover住全部中间件，比如我想记录，整个请求的耗时时间，以便针对优化的功能。因此需要把之前生硬的方...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-03-02T08:32:55.000Z">2022-03-02</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/02/11/mygin-day07.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day07.jpg"/></div><h2 class="post-title">07.Mygin中sync.Pool应用</h2><div class="excerpt"><p>本篇是mygin的第六篇，参照gin框架，感兴趣的可以从 Mygin第一篇 开始看，Mygin从零开始完全手写，在实现的同时，带你一窥gin框架的核心原理实现。
+目的
+sync.Pool 的作用介绍
+mygin中使用sync.Pool
+
+sync.Pool 的作用先看看官方文档怎样说的吧，我截取了官方文档的第一句。
+12// A Pool is a set of temporary obje...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-02-11T06:37:59.000Z">2022-02-11</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/02/07/mygin-day06.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day06.jpg"/></div><h2 class="post-title">06.Mygin实现中间件Middleware</h2><div class="excerpt"><p>本篇是mygin的第六篇，参照gin框架，感兴趣的可以从 Mygin第一篇 开始看，Mygin从零开始完全手写，在实现的同时，带你一窥gin框架的核心原理实现。
+目的
+实现中间件Middleware在上一篇 Mygin实现分组路由Group 中，实现了路由分组，且同一分组的执行，会先执行Group，有一点点中间件的雏形了。但是中间件不完全还应该提供中断功能，比如一个Group组中添加了aut...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-02-07T04:17:09.000Z">2022-02-07</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/01/31/mygin-day05.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day05.jpg"/></div><h2 class="post-title">05.Mygin实现分组路由Group</h2><div class="excerpt"><p>本篇是Mygin第五篇
+目的
+实现路由分组
+
+为什么要分组分组控制(Group Control)是 Web 框架应该提供的基础功能之一，对同一模块功能的开发，应该有相同的前缀。或者对一部分第三方接口，统一需要加解密等功能。分组后很方便。例如：
+
+对于任务模块，统一前缀为&#x2F;task
+除去&#x2F;user&#x2F;login接口，都需要鉴权
+以&#x2F;openapi 开头的接...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-31T05:58:03.000Z">2022-01-31</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/01/30/mygin-day04.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day04.jpg"/></div><h2 class="post-title">04.Mygin实现动态路由</h2><div class="excerpt"><p>本篇是Mygin的第四篇
+目的
+使用 Trie 树实现动态路由解析。
+参数绑定
+
+前缀树本篇比前几篇要复杂一点，原来的路由是用map实现，索引非常高效，但是有一个弊端，键值对的存储的方式，只能用来索引静态路由。遇到类似hello&#x2F;:name这动态路由就无能为力了，实现动态路由最常用的数据结构，被称为前缀树。这种结构非常适用于路由匹配。比如我们定义了如下路由：
+
+&#x2F;a&#x...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-30T03:08:11.000Z">2022-01-30</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/01/28/mygin-day03.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day03.jpg"/></div><h2 class="post-title">03.Mygin实现上下文</h2><div class="excerpt"><p>本篇是Mygin的第三篇
+目的
+将路由独立出来，方便后续扩展修改
+上下文Context，对http.ResponseWriter和http.Request进行封装，实现对JSON、HTML等的支持
+
+路由新建一个router文件，将 Mygin实现简单的路由 中将路由部分复制出来
+
+新建Mygin&#x2F;router.go
+
+1234567891011121314151617181920...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-28T05:28:30.000Z">2022-01-28</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/01/26/mygin-day02.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day02.jpg"/></div><h2 class="post-title">02.Mygin实现简单的路由</h2><div class="excerpt"><p>本文是Mygin第二篇
+目的:
+实现路由映射
+提供了用户注册静态路由方法（GET、POST方法）
+
+基于上一篇 Mygin 实现简单Http 且参照Gin
+
+使用了map数组实现简单路由的映射关系
+不同的method对应一个组，Gin框架初始化时map时初始化9个，因为支持的http.method刚好为9个
+
+1234567891011121314package http//Gin 中对应的...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-26T05:18:10.000Z">2022-01-26</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a><a class="post-card post" href="/2022/01/24/mygin-day01.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/go1.jpg"/></div><h2 class="post-title">01.Mygin实现简单Http</h2><div class="excerpt"><p>本篇是完全参考gin的功能，自己手动实现一个类似的功能，帮助自己理解和学习gin框架。目的:简单介绍net&#x2F;http库以及http.Handler接口,实现简单路由请求的功能。
+目的
+简单介绍net&#x2F;http库以及http.Handler接口
+实现简单路由请求的功能
+
+标准库启动Web服务先看用标准库怎样启动一个web服务
+123456789import &quot;ne...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-24T08:38:50.000Z">2022-01-24</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
+</a></div>
+
 
 <footer class="page-footer fs12"><hr><div class="text"><center>
 </br>
