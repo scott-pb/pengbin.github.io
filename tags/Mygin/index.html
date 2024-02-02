@@ -16,12 +16,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
   
-  <title>标签：Golang - PBScott</title>
+  <title>标签：Mygin - PBScott</title>
 
   
     <meta property="og:type" content="website">
 <meta property="og:title" content="PBScott">
-<meta property="og:url" content="http://scott-pb.github.io/tags/Golang/index.html">
+<meta property="og:url" content="http://scott-pb.github.io/tags/Mygin/index.html">
 <meta property="og:site_name" content="PBScott">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="PengBin">
@@ -77,62 +77,8 @@
 
 
 
-<div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a href="/categories">分类</a><a class="active" href="/tags">标签：Golang</a><a href="/archives">归档</a></nav></div>
-<div class="post-list post"><a class="post-card post" href="/2022/02/11/mygin-day07.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day07.jpg"/></div><h2 class="post-title">07.Mygin中sync.Pool应用</h2><div class="excerpt"><p>本篇是mygin的第六篇，参照gin框架，感兴趣的可以从 Mygin第一篇 开始看，Mygin从零开始完全手写，在实现的同时，带你一窥gin框架的核心原理实现。
-目的
-sync.Pool 的作用介绍
-mygin中使用sync.Pool
-
-sync.Pool 的作用先看看官方文档怎样说的吧，我截取了官方文档的第一句。
-12// A Pool is a set of temporary obje...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-02-11T06:37:59.000Z">2022-02-11</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/02/07/mygin-day06.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day06.jpg"/></div><h2 class="post-title">06.Mygin实现中间件Middleware</h2><div class="excerpt"><p>本篇是mygin的第六篇，参照gin框架，感兴趣的可以从 Mygin第一篇 开始看，Mygin从零开始完全手写，在实现的同时，带你一窥gin框架的核心原理实现。
-目的
-实现中间件Middleware在上一篇 Mygin实现分组路由Group 中，实现了路由分组，且同一分组的执行，会先执行Group，有一点点中间件的雏形了。但是中间件不完全还应该提供中断功能，比如一个Group组中添加了aut...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-02-07T04:17:09.000Z">2022-02-07</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/31/mygin-day05.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day05.jpg"/></div><h2 class="post-title">05.Mygin实现分组路由Group</h2><div class="excerpt"><p>本篇是Mygin第五篇
-目的
-实现路由分组
-
-为什么要分组分组控制(Group Control)是 Web 框架应该提供的基础功能之一，对同一模块功能的开发，应该有相同的前缀。或者对一部分第三方接口，统一需要加解密等功能。分组后很方便。例如：
-
-对于任务模块，统一前缀为&#x2F;task
-除去&#x2F;user&#x2F;login接口，都需要鉴权
-以&#x2F;openapi 开头的接...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-31T05:58:03.000Z">2022-01-31</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/30/mygin-day04.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day04.jpg"/></div><h2 class="post-title">04.Mygin实现动态路由</h2><div class="excerpt"><p>本篇是Mygin的第四篇
-目的
-使用 Trie 树实现动态路由解析。
-参数绑定
-
-前缀树本篇比前几篇要复杂一点，原来的路由是用map实现，索引非常高效，但是有一个弊端，键值对的存储的方式，只能用来索引静态路由。遇到类似hello&#x2F;:name这动态路由就无能为力了，实现动态路由最常用的数据结构，被称为前缀树。这种结构非常适用于路由匹配。比如我们定义了如下路由：
-
-&#x2F;a&#x...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-30T03:08:11.000Z">2022-01-30</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/28/mygin-day03.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day03.jpg"/></div><h2 class="post-title">03.Mygin实现上下文</h2><div class="excerpt"><p>本篇是Mygin的第三篇
-目的
-将路由独立出来，方便后续扩展修改
-上下文Context，对http.ResponseWriter和http.Request进行封装，实现对JSON、HTML等的支持
-
-路由新建一个router文件，将 Mygin实现简单的路由 中将路由部分复制出来
-
-新建Mygin&#x2F;router.go
-
-1234567891011121314151617181920...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-28T05:28:30.000Z">2022-01-28</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/26/mygin-day02.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/day02.jpg"/></div><h2 class="post-title">02.Mygin实现简单的路由</h2><div class="excerpt"><p>本文是Mygin第二篇
-目的:
-实现路由映射
-提供了用户注册静态路由方法（GET、POST方法）
-
-基于上一篇 Mygin 实现简单Http 且参照Gin
-
-使用了map数组实现简单路由的映射关系
-不同的method对应一个组，Gin框架初始化时map时初始化9个，因为支持的http.method刚好为9个
-
-1234567891011121314package http//Gin 中对应的...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-26T05:18:10.000Z">2022-01-26</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/24/mygin-day01.html">
+<div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a href="/categories">分类</a><a class="active" href="/tags">标签：Mygin</a><a href="/archives">归档</a></nav></div>
+<div class="post-list post"><a class="post-card post" href="/2022/01/24/mygin-day01.html">
 <article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/go1.jpg"/></div><h2 class="post-title">01.Mygin实现简单Http</h2><div class="excerpt"><p>本篇是完全参考gin的功能，自己手动实现一个类似的功能，帮助自己理解和学习gin框架。目的:简单介绍net&#x2F;http库以及http.Handler接口,实现简单路由请求的功能。
 目的
 简单介绍net&#x2F;http库以及http.Handler接口
