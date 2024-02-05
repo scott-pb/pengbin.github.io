@@ -16,18 +16,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
   
-  <title>MyGorm：序言 - PBScott</title>
+  <title>MyGorm：Go连接Mysql - PBScott</title>
 
   
-    <meta name="description" content="对象和数据库是如何映射   数据库 对象表    表(table) 类(struct)   记录(record, row) 对象 (object)   字段(field, column) 对象属性(attribute)   现在看起来比较抽象，举个例子就形象很多了。比如在Mysql数据库中： 123CREATE TABLE &#96;Student&#96; (&#96;Name&#96; text, &#96;Scope&#96; integ">
+    <meta name="description" content="本篇是Go从零实现ORM框架MyGORM的第一篇。 目的 MYSQL 的基础操作（连接数据库，创建表、增删记录等）。 使用 Go 语言标准库 database&#x2F;sql 连接并操作 MYSQL 数据库。  Go连接MYSQLGo原生提供了连接数据库操作的支持，在用 Golang进行开发的时候，如果需要在和数据库交互，则可以使用database&#x2F;sql包。这是一个对关系型数据库的通">
 <meta property="og:type" content="website">
-<meta property="og:title" content="序言">
-<meta property="og:url" content="http://scott-pb.github.io/wiki/my-gorm/index.html">
+<meta property="og:title" content="Go连接Mysql">
+<meta property="og:url" content="http://scott-pb.github.io/wiki/my-gorm/mysql.html">
 <meta property="og:site_name" content="PBScott">
-<meta property="og:description" content="对象和数据库是如何映射   数据库 对象表    表(table) 类(struct)   记录(record, row) 对象 (object)   字段(field, column) 对象属性(attribute)   现在看起来比较抽象，举个例子就形象很多了。比如在Mysql数据库中： 123CREATE TABLE &#96;Student&#96; (&#96;Name&#96; text, &#96;Scope&#96; integ">
+<meta property="og:description" content="本篇是Go从零实现ORM框架MyGORM的第一篇。 目的 MYSQL 的基础操作（连接数据库，创建表、增删记录等）。 使用 Go 语言标准库 database&#x2F;sql 连接并操作 MYSQL 数据库。  Go连接MYSQLGo原生提供了连接数据库操作的支持，在用 Golang进行开发的时候，如果需要在和数据库交互，则可以使用database&#x2F;sql包。这是一个对关系型数据库的通">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-04-02T03:32:55.000Z">
-<meta property="article:modified_time" content="2024-02-05T02:05:30.658Z">
+<meta property="article:published_time" content="2022-04-04T05:32:55.000Z">
+<meta property="article:modified_time" content="2024-02-05T06:06:29.754Z">
 <meta property="article:author" content="PengBin">
 <meta property="article:tag" content="Golang">
 <meta property="article:tag" content="MyGorm">
@@ -54,7 +54,7 @@
 </head>
 <body>
 
-<div class="l_cover wiki"><article class="cover-wrap md-text"><div class="preview cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/wiki/mygorm/logo.svg"/></div><div class="cover-title"><span>MyGorm - Go从零实现ORM</span></div><div class="description">MyGorm是从零实现Go的ORM框架，对象关系映射（Object Relational Mapping，简称ORM）是通过使用描述对象和数据库之间映射的元数据，将面向对象语言程序中的对象自动持久化到关系数据库中。</div><div class="start-wrap"><a class="button start gradient" href="#start">开始使用</a></div></article></div><hr>
+
 
 <div class="l_body content tech" id="start" layout="page" ><aside class="l_left"><div class="sidebar-container sidebar-blur">
 
@@ -69,7 +69,7 @@
 </div>
 <div class="widgets">
 
-<widget class="widget-wrapper toc multi" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">序言</span></div><div class="widget-body fs14"><div class="doc-tree active"><a class="doc-tree-link active" href="/wiki/my-gorm/index.html#start"><span class="toc-text">序言</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E6%98%A0%E5%B0%84"><span class="toc-text">对象和数据库是如何映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA-ORM-%E6%A1%86%E6%9E%B6"><span class="toc-text">如何实现一个 ORM 框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EMyGorm"><span class="toc-text">关于MyGorm</span></a></li></ol></div></div><div class="widget-header dis-select"><span class="name">基础</span></div><div class="widget-body fs14"><div class="doc-tree"><a class="doc-tree-link" href="/wiki/my-gorm/mysql.html"><span class="toc-text">Go连接Mysql</span></a></div></div><div class="widget-header dis-select"><span class="name">核心实现</span></div><div class="widget-body fs14"><div class="doc-tree"><a class="doc-tree-link" href="/wiki/my-gorm/mygorm-engine.html"><span class="toc-text">MyGorm核心引擎</span></a></div></div></widget>
+<widget class="widget-wrapper toc multi" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">序言</span></div><div class="widget-body fs14"><div class="doc-tree"><a class="doc-tree-link" href="/wiki/my-gorm/index.html#start"><span class="toc-text">序言</span></a></div></div><div class="widget-header dis-select"><span class="name">基础</span></div><div class="widget-body fs14"><div class="doc-tree active"><a class="doc-tree-link active" href="/wiki/my-gorm/mysql.html"><span class="toc-text">Go连接Mysql</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E7%9A%84"><span class="toc-text">目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go%E8%BF%9E%E6%8E%A5MYSQL"><span class="toc-text">Go连接MYSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E8%A1%A8"><span class="toc-text">建表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BC%E5%8C%85"><span class="toc-text">导包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="toc-text">初始化数据库连接</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%85%E5%90%8D%E5%89%8D%E9%9D%A2%E7%9A%84%E2%80%9D-%E2%80%9D%E4%BD%9C%E7%94%A8"><span class="toc-text">包名前面的”_”作用:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#database-sql%E7%AE%80%E4%BB%8B"><span class="toc-text">database&#x2F;sql简介</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%93%8D%E4%BD%9C"><span class="toc-text">查询操作</span></a></li></ol></li></ol></div></div><div class="widget-header dis-select"><span class="name">核心实现</span></div><div class="widget-body fs14"><div class="doc-tree"><a class="doc-tree-link" href="/wiki/my-gorm/mygorm-engine.html"><span class="toc-text">MyGorm核心引擎</span></a></div></div></widget>
 
 
 </div>
@@ -82,7 +82,7 @@
 
 <div class="bread-nav fs12"><div class="left"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
 <span class="sep"></span><a class="cap breadcrumb" id="menu" href="/wiki">文档</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/wiki/my-gorm/index.html">MyGorm</a></div>
-<div id="post-meta"><span class="author">更新于：</span><time datetime="2024-02-05T02:05:30.658Z">2024-02-05</time></span></div></div>
+<div id="post-meta"><span class="author">更新于：</span><time datetime="2024-02-05T06:06:29.754Z">2024-02-05</time></span></div></div>
 
   <div class="right ghrepo stellar-ghinfo-api" api="https://api.github.com/repos/scott-pb/my-gorm">
     <a class="repo-link bold" target="_blank" rel="noopener" href="https://github.com/scott-pb/my-gorm">
@@ -99,60 +99,48 @@
     </a>
   </div>
   </div>
-<article class="md-text content"><h1 class="article-title"><span>序言</span></h1><h2 id="对象和数据库是如何映射"><a href="#对象和数据库是如何映射" class="headerlink" title="对象和数据库是如何映射"></a>对象和数据库是如何映射</h2><table>
-<thead>
-<tr>
-<th>数据库</th>
-<th>对象表</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>表(table)</td>
-<td>类(struct)</td>
-</tr>
-<tr>
-<td>记录(record, row)</td>
-<td>对象 (object)</td>
-</tr>
-<tr>
-<td>字段(field, column)</td>
-<td>对象属性(attribute)</td>
-</tr>
-</tbody></table>
-<p>现在看起来比较抽象，举个例子就形象很多了。<br>比如在Mysql数据库中：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `Student` (`Name` text, `<span class="keyword">Scope</span>` <span class="type">integer</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `Student` (`Name`, `<span class="keyword">Scope</span>`) <span class="keyword">VALUES</span> (&quot;张三&quot;, <span class="number">98</span>);</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `Student`;</span><br></pre></td></tr></table></figure>
-<p>如果我们使用了ORM框架，在Go中的写法如下:</p>
-<figure class="highlight golang"><figcaption><span>Student.go</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name  <span class="type">string</span></span><br><span class="line">	Scope <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mygorm.CreateTable(&amp;Student&#123;&#125;)</span><br><span class="line">mygorm.Save(&amp;Student&#123;<span class="string">&quot;张三&quot;</span>, <span class="number">98</span>&#125;)</span><br><span class="line"><span class="keyword">var</span> students []Student</span><br><span class="line">mygorm.Find(&amp;students)</span><br></pre></td></tr></table></figure>
-<p>ORM 相当于是对象与数据库的映射关系，可以把数据库中的一条条数据想象成一个个对象，一张表的数据，相当于相同对象的集合，我们通过操作对象集合的方法，从而实现对关系型数据库的操作。</p>
-<h2 id="如何实现一个-ORM-框架"><a href="#如何实现一个-ORM-框架" class="headerlink" title="如何实现一个 ORM 框架"></a>如何实现一个 ORM 框架</h2><p>根据上面的例子，看到对数据库操作，传递了对象从而实现对关系型数据库的操作。但是ORM 框架是怎么知道上面的 “张三”对应的是数据库中的Name的，这个时候就不得不提到反射了，Go 语言的反射机制(reflect)，通过反射，可以获取到对象对应的结构体名称，成员变量、方法等信息。</p>
-<p>例如在下面的例子中：</p>
-<figure class="highlight golang"><figcaption><span>main.go</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;reflect&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name  <span class="type">string</span></span><br><span class="line">	Scope <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	</span><br><span class="line">	valueOf := reflect.ValueOf(&amp;Student&#123;<span class="string">&quot;张三&quot;</span>, <span class="number">98</span>&#125;).Elem()</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; valueOf.NumField(); i++ &#123;</span><br><span class="line">		fieldValue := valueOf.Field(i)</span><br><span class="line">		fieldType := valueOf.Field(i).Type()</span><br><span class="line">		fmt.Println(fieldValue, fieldType)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的测试代码，会把字段和字段类型输出。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">~ go run student.go</span><br><span class="line">张三 string</span><br><span class="line">98 int</span><br></pre></td></tr></table></figure>
-<ul>
-<li>reflect.ValueOf() 获取指针对应的反射值。</li>
-<li>(reflect.Type).Field(i).Type() 获取第 i 个成员变量类型。</li>
-<li>(reflect.Type).Field(i) 获取第 i 个成员变量。</li>
-<li>…</li>
+<article class="md-text content"><h1 class="article-title"><span>Go连接Mysql</span></h1><p>本篇是Go从零实现ORM框架MyGORM的第一篇。</p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><ul>
+<li>MYSQL 的基础操作（连接数据库，创建表、增删记录等）。</li>
+<li>使用 Go 语言标准库 database&#x2F;sql 连接并操作 MYSQL 数据库。</li>
 </ul>
-<h2 id="关于MyGorm"><a href="#关于MyGorm" class="headerlink" title="关于MyGorm"></a>关于MyGorm</h2><p>MyGorm主要基于MySQL开发</p>
-<ul>
-<li><p>简单的增删查改使用 ORM 替代 SQL 语句是很简单的，但是实际应用中不仅仅是对单表进行CURD，比如复杂的多表关联查询，ORM 也需要支持，因此，设计实现一个 ORM 框架，先从简单的入手。万丈高楼平地起，一砖一瓦皆根基。就像Mygin一样。</p>
+<h2 id="Go连接MYSQL"><a href="#Go连接MYSQL" class="headerlink" title="Go连接MYSQL"></a>Go连接MYSQL</h2><p>Go原生提供了连接数据库操作的支持，在用 Golang进行开发的时候，如果需要在和数据库交互，则可以使用database&#x2F;sql包。这是一个对关系型数据库的通用抽象，它提供了标准的、轻量的、面向行的接口。</p>
+<p>在Go中访问数据库需要用到sql.DB接口：它可以创建语句(statement)和事务(transaction)，执行查询，获取结果。</p>
+<p>使用数据库时，除了database&#x2F;sql包本身，还需要引入想使用的特定数据库驱动，我使用的驱动为 <strong>github.com&#x2F;go-sql-driver&#x2F;mysql</strong></p>
+<h3 id="建表"><a href="#建表" class="headerlink" title="建表"></a>建表</h3><p>在执行数据库操作前，先建一张数据表</p>
+<figure class="highlight sql"><figcaption><span>mg_user.sql</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `mg_user` (</span><br><span class="line">  `id` <span class="type">int</span> unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;姓名&#x27;</span>,</span><br><span class="line">  `birthday` <span class="type">date</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;出生日期&#x27;</span>,</span><br><span class="line">  `gender` tinyint unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;1&#x27;</span> COMMENT <span class="string">&#x27;1男 2女 3保密&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4 <span class="keyword">COLLATE</span><span class="operator">=</span>utf8mb4_0900_ai_ci;</span><br></pre></td></tr></table></figure>
+
+<h3 id="导包"><a href="#导包" class="headerlink" title="导包"></a>导包</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/go-sql-driver/mysql</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化数据库连接"><a href="#初始化数据库连接" class="headerlink" title="初始化数据库连接"></a>初始化数据库连接</h3><figure class="highlight go"><figcaption><span>main.go</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;database/sql&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	_ <span class="string">&quot;github.com/go-sql-driver/mysql&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	db, err := sql.Open(<span class="string">&quot;mysql&quot;</span>, <span class="string">&quot;root:123456@tcp(127.0.0.1:3306)/my-gorm&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//设置与数据库的最大打开连接数</span></span><br><span class="line">	db.SetMaxOpenConns(<span class="number">100</span>)</span><br><span class="line">	<span class="comment">//设置空闲中的最大连接数</span></span><br><span class="line">	db.SetMaxIdleConns(<span class="number">10</span>)</span><br><span class="line">	<span class="keyword">if</span> err := db.Ping(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;打开数据库失败&quot;</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;数据库连接 success&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="包名前面的”-”作用"><a href="#包名前面的”-”作用" class="headerlink" title="包名前面的”_”作用:"></a>包名前面的”_”作用:</h4><ul>
+<li>当导入一个包时，该包下的文件里所有init()函数都会被执行，然而，有些时候我们并不需要把整个包都导入进来，仅仅是是希望它执行init()函数而已。这个时候就可以使用 import _ 引用该包。</li>
+<li>上面的mysql驱动中引入的就是mysql包中各个init()方法。</li>
+</ul>
+<h4 id="database-sql简介"><a href="#database-sql简介" class="headerlink" title="database&#x2F;sql简介"></a>database&#x2F;sql简介</h4><ol>
+<li><p>sql.Open()中的数据库连接串格式为：”用户名:密码@tcp(IP:端口)&#x2F;数据库?charset&#x3D;utf8”。</p>
 </li>
-<li><p>Go 语言中使用比较广泛 ORM 框架是 <a target="_blank" rel="noopener" href="https://github.com/jinzhu/gorm">gorm</a> 和 <a target="_blank" rel="noopener" href="https://github.com/go-xorm/xorm">xorm</a>。除了基础的功能，比如表的操作，记录的增删查改，gorm 还实现了关联关系(一对一、一对多等)，回调插件等；xorm 实现了读写分离(支持配置多个数据库)，数据同步，导入导出等。</p>
+<li><p>DB的类型为:*sql.DB，有了DB之后我们就可以执行CRUD操作。Go将数据库操作分为两类：Query与Exec。两者的区别在于前者会返回结果，而后者不会。</p>
 </li>
-</ul>
-<p>MyGorm目的主要是了解 ORM 框架设计的原理,具体实现的功能有：</p>
-<ul>
-<li>表的创建、删除、迁移。</li>
-<li>记录的增删查改，查询条件的链式操作。</li>
-<li>单一主键的设置(primary key)。</li>
-<li>钩子(在创建&#x2F;更新&#x2F;删除&#x2F;查找之前或之后)</li>
-<li>事务(transaction)。</li>
-<li>…</li>
-</ul>
+<li><p>Query表示查询，它会从数据库获取查询结果（一系列行，可能为空）。<br>Exec表示执行语句，它不会返回行。</p>
+</li>
+<li><p>此外还有两种常见的数据库操作模式：QueryRow表示只返回一行的查询，作为Query的一个常见特例。Prepare表示准备一个需要多次使用的语句，供后续执行用，通常用于批量处理语句。</p>
+</li>
+</ol>
+<h3 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//发送查询到数据库，获取结果集Rows</span></span><br><span class="line">rows, err := db.Query(<span class="string">&quot;SELECT * FROM mg_user&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Println(err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//关闭结果集，释放连接。</span></span><br><span class="line"><span class="keyword">defer</span> rows.Close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    id       <span class="type">int</span></span><br><span class="line">    name     <span class="type">string</span></span><br><span class="line">    birthday <span class="type">string</span></span><br><span class="line">    gender   <span class="type">uint8</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> user User</span><br><span class="line"></span><br><span class="line"><span class="comment">//作为循环条件，迭代读取结果集。</span></span><br><span class="line"><span class="keyword">for</span> rows.Next() &#123;</span><br><span class="line">    <span class="comment">//Scan从结果集中获取一行结果。</span></span><br><span class="line">    err := rows.Scan(&amp;user.id, &amp;user.name, &amp;user.birthday, &amp;user.gender)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(user)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的操作流程如下：</p>
+<ol>
+<li>使用db.Query()来发送查询到数据库，获取结果集Rows，并检查错误。</li>
+<li>使用rows.Next()作为循环条件，迭代读取结果集。</li>
+<li>使用rows.Scan从结果集中获取一行结果。</li>
+<li>使用rows.Err()在退出迭代后检查错误。</li>
+<li>使用rows.Close()关闭结果集，释放连接。</li>
+</ol>
+<p>执行 go run main.go，输出如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go run student.go</span><br><span class="line">数据库连接 success</span><br><span class="line">&#123;1 张三 1992-06-30 1&#125;</span><br></pre></td></tr></table></figure>
+<p>掌握了基础的 SQL 语句和 Go 标准库 database&#x2F;sql 的使用，可以开始实现 ORM 框架的雏形了。</p>
 </article>
-<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">接下来阅读</div><a href="/wiki/my-gorm/mysql.html">Go连接Mysql</a></div></section></div>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">回顾上一篇</div><a href="/wiki/my-gorm/index.html">序言</a></div><div class="item" id="next"><div class="note">接下来阅读</div><a href="/wiki/my-gorm/mygorm-engine.html">MyGorm核心引擎</a></div></section></div>
 
 
 
