@@ -63,7 +63,7 @@
 <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
 </div></widget>
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/04/Git%E4%BB%A3%E7%A0%81%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html"><span class="title">Git代码量统计常用命令</span></a><a class="item title" href="/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">09.Mygin之错误恢复Recover中间件</span></a><a class="item title" href="/2022/03/02/08-Mygin%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%BC%98%E5%8C%96%E5%8F%8Alogger%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">08.Mygin中间件优化及logger日志中间件</span></a><a class="item title" href="/2022/01/24/mygin-day01.html"><span class="title">01.Mygin实现简单Http</span></a><a class="item title" href="/2022/02/11/mygin-day07.html"><span class="title">07.Mygin中sync.Pool应用</span></a><a class="item title" href="/2022/02/07/mygin-day06.html"><span class="title">06.Mygin实现中间件Middleware</span></a><a class="item title" href="/2022/01/28/mygin-day03.html"><span class="title">03.Mygin实现上下文</span></a><a class="item title" href="/2022/01/31/mygin-day05.html"><span class="title">05.Mygin实现分组路由Group</span></a><a class="item title" href="/2022/01/30/mygin-day04.html"><span class="title">04.Mygin实现动态路由</span></a><a class="item title" href="/2022/01/26/mygin-day02.html"><span class="title">02.Mygin实现简单的路由</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/06/Gitcommit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit.html"><span class="title">Git commit之后撤销commit</span></a><a class="item title" href="/2024/02/04/Git%E4%BB%A3%E7%A0%81%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html"><span class="title">Git代码量统计常用命令</span></a><a class="item title" href="/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">09.Mygin之错误恢复Recover中间件</span></a><a class="item title" href="/2022/03/02/08-Mygin%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%BC%98%E5%8C%96%E5%8F%8Alogger%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6.html"><span class="title">08.Mygin中间件优化及logger日志中间件</span></a><a class="item title" href="/2022/01/24/mygin-day01.html"><span class="title">01.Mygin实现简单Http</span></a><a class="item title" href="/2022/02/11/mygin-day07.html"><span class="title">07.Mygin中sync.Pool应用</span></a><a class="item title" href="/2022/02/07/mygin-day06.html"><span class="title">06.Mygin实现中间件Middleware</span></a><a class="item title" href="/2022/01/28/mygin-day03.html"><span class="title">03.Mygin实现上下文</span></a><a class="item title" href="/2022/01/31/mygin-day05.html"><span class="title">05.Mygin实现分组路由Group</span></a><a class="item title" href="/2022/01/30/mygin-day04.html"><span class="title">04.Mygin实现动态路由</span></a></div></widget>
 
 
 </div>
@@ -76,7 +76,16 @@
 
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">近期发布</a><a href="/categories">分类</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
-<div class="post-list post"><a class="post-card post" href="/2024/02/04/Git%E4%BB%A3%E7%A0%81%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html">
+<div class="post-list post"><a class="post-card post" href="/2024/02/06/Gitcommit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit.html">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/git-commit.jpg"/></div><h2 class="post-title">Git commit之后撤销commit</h2><div class="excerpt"><p>撤销写完代码后，我们一般这样
+123git add . //添加所有文件git commit -m &quot;本功能全部完成&quot;
+执行完commit后，想撤回commit，怎么办？
+1git reset --soft HEAD^
+
+这样就成功的撤销了你的commit。
+
+注意，仅仅是撤回commit操作，您写的代码仍然保留。HEAD^的意思是上一个版本，也可以写成HEAD~1,如果...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2024-02-06T02:46:30.000Z">2024-02-06</time></span><span class="cap breadcrumb">Git</span></div></article>
+</a><a class="post-card post" href="/2024/02/04/Git%E4%BB%A3%E7%A0%81%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html">
 <article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/git.jpg"/></div><h2 class="post-title">Git代码量统计常用命令</h2><div class="excerpt"><p>一、Git统计代码量1.根据用户名时间段统计123git log --author=&quot;username&quot; --since=2018-01-01 --until=2019-12-31 \--pretty=tformat: --numstat | awk &#x27;&#123; add += $1; subs += $2; loc += $1 - $2 &#125; \EN...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2024-02-04T08:59:01.000Z">2024-02-04</time></span><span class="cap breadcrumb">Git</span></div></article>
 </a><a class="post-card post" href="/2022/03/04/09-Mygin%E4%B9%8B%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8DRecover%E4%B8%AD%E9%97%B4%E4%BB%B6.html">
 <article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/mygin09.jpg"/></div><h2 class="post-title">09.Mygin之错误恢复Recover中间件</h2><div class="excerpt"><p>本篇是mygin这个系列的最后一篇。如果想自己动手实现一个类似Gin的Web框架，建议从 mgin第一篇开始，总代码行数有效行数只有600多行
@@ -144,15 +153,11 @@ sync.Pool 的作用先看看官方文档怎样说的吧，我截取了官方文�
 不同的method对应一个组，Gin框架初始化时map时初始化9个，因为支持的http.method刚好为9个
 
 1234567891011121314package http//Gin 中对应的...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-26T05:18:10.000Z">2022-01-26</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
-</a><a class="post-card post" href="/2022/01/24/mygin-day01.html">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/images/go1.jpg"/></div><h2 class="post-title">01.Mygin实现简单Http</h2><div class="excerpt"><p>本篇是完全参考gin的功能，自己手动实现一个类似的功能，帮助自己理解和学习gin框架。目的:简单介绍net&#x2F;http库以及http.Handler接口,实现简单路由请求的功能。
-目的
-简单介绍net&#x2F;http库以及http.Handler接口
-实现简单路由请求的功能
-
-标准库启动Web服务先看用标准库怎样启动一个web服务
-123456789import &quot;ne...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-01-24T08:38:50.000Z">2022-01-24</time></span><span class="cap breadcrumb">Go从零实现Web框架Mygin教程</span></div></article>
 </a></div>
+
+  <div class='paginator-wrap dis-select'>
+  <span class="extend prev" rel="prev"></span><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"></a>
+  </div>
 
 
 <footer class="page-footer fs12"><hr><div class="text"><center>
